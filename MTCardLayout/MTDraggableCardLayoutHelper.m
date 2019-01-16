@@ -52,13 +52,13 @@ typedef NS_ENUM(NSInteger, MTDraggingAction) {
         self.collectionView = collectionView;
         
         self.longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc]
-                                       initWithTarget:self
-                                       action:@selector(handleLongPressGesture:)];
+                                           initWithTarget:self
+                                           action:@selector(handleLongPressGesture:)];
         self.longPressGestureRecognizer.delegate = self;
         [self.collectionView addGestureRecognizer:self.longPressGestureRecognizer];
         
         self.panGestureRecognizer = [[UIPanGestureRecognizer alloc]
-                                      initWithTarget:self
+                                     initWithTarget:self
                                      action:@selector(handlePanGesture:)];
         self.panGestureRecognizer.maximumNumberOfTouches = 1;
         self.panGestureRecognizer.delegate = self;
@@ -223,9 +223,9 @@ typedef NS_ENUM(NSInteger, MTDraggingAction) {
 - (BOOL)canDeleteItemAtIndexPath:(NSIndexPath *)indexPath
 {
     id<UICollectionViewDataSource_Draggable> dataSource = (id<UICollectionViewDataSource_Draggable>)self.collectionView.dataSource;
-
+    
     return [dataSource respondsToSelector:@selector(collectionView:canDeleteItemAtIndexPath:)] &&
-        [dataSource collectionView:self.collectionView canDeleteItemAtIndexPath:indexPath];
+    [dataSource collectionView:self.collectionView canDeleteItemAtIndexPath:indexPath];
 }
 
 - (void)showDeletionIndicatorAnimated:(BOOL)animated
@@ -369,22 +369,26 @@ typedef NS_ENUM(NSInteger, MTDraggingAction) {
 {
     CGPoint point = [gestureRecognizer locationInView:self.collectionView];
     NSIndexPath *indexPath = [self.collectionView indexPathForItemAtPoint:point];
-
+    
     if (!indexPath) return NO;
     
     if (gestureRecognizer == self.longPressGestureRecognizer) {
         return self.collectionView.viewMode == MTCardLayoutViewModeDefault;
     }
-
+    
     if (gestureRecognizer == self.panGestureRecognizer) {
+        CGPoint velocity = [self.panGestureRecognizer velocityInView:self.collectionView];
+        
         id<UICollectionViewDelegate_Draggable> delegate = (id<UICollectionViewDelegate_Draggable>)self.collectionView.delegate;
-        if ([delegate respondsToSelector:@selector(collectionView:shouldRecognizePanGestureAtPoint:)] &&
-            ![delegate collectionView:self.collectionView shouldRecognizePanGestureAtPoint:point]) {
-            return NO;
+        if ([delegate respondsToSelector:@selector(collectionView:shouldRecognizePanGestureAtPoint:)] && self.collectionView.viewMode == MTCardLayoutViewModePresenting) {
+            if (velocity.y < 0) {
+                return NO;
+            } else {
+                return [delegate collectionView:self.collectionView shouldRecognizePanGestureAtPoint:point];
+            }
         }
-
+        
         if (self.collectionView.viewMode == MTCardLayoutViewModeDefault && !self.movingItemAttributes) {
-            CGPoint velocity = [self.panGestureRecognizer velocityInView:self.collectionView];
             if (fabs(velocity.x) < fabs(velocity.y)) {
                 return NO;
             }
@@ -502,9 +506,9 @@ typedef NS_ENUM(NSInteger, MTDraggingAction) {
     
     NSIndexPath *indexPath = self.movingItemAttributes.indexPath;
     NSAssert(indexPath, @"movingItemAttributes cannot be nil");
-
+    
     if (gestureRecognizer.state == UIGestureRecognizerStateChanged) {
-       switch (self.draggingAction) {
+        switch (self.draggingAction) {
             case MTDraggingActionDismissPresenting: {
                 self.movingItemTranslation = CGPointMake(0, [gestureRecognizer translationInView:collectionView].y);
                 [self updateMovingCell];
@@ -561,12 +565,12 @@ typedef NS_ENUM(NSInteger, MTDraggingAction) {
             NSIndexPath *indexPath = self.movingItemAttributes.indexPath;
             NSAssert(indexPath, @"movingItemAttributes cannot be nil");
             CGPoint translation = self.movingItemTranslation;
-
+            
             if (gestureRecognizer.state != UIGestureRecognizerStateCancelled &&
                 (translation.y < -DRAG_ACTION_LIMIT || translation.x < -DRAG_ACTION_LIMIT) &&
                 [self canDeleteItemAtIndexPath:indexPath]) {
                 UISwipeGestureRecognizerDirection direction = (self.draggingAction == MTDraggingActionSwipeToDelete) ?
-                    UISwipeGestureRecognizerDirectionLeft : UISwipeGestureRecognizerDirectionUp;
+                UISwipeGestureRecognizerDirectionLeft : UISwipeGestureRecognizerDirectionUp;
                 [self finalizeDeletingItemWithSwipeDirection:direction];
             } else {
                 // Return item to original position

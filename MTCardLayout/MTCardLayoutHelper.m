@@ -50,6 +50,7 @@ static NSString * const kContentOffsetKeyPath = @"contentOffset";
             
             if (collectionView.contentOffset.y < - 100 - edgeInsets.top && collectionView.scrollEnabled)
             {
+                return;
                 collectionView.contentInset = UIEdgeInsetsMake(-collectionView.contentOffset.y, edgeInsets.left, edgeInsets.bottom, edgeInsets.right);
                 collectionView.bounces = NO;
                 

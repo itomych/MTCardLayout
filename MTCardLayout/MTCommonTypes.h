@@ -24,10 +24,16 @@ typedef struct
     
     // This value is calculated internally
     CGFloat visibleHeight;
+    
+    // This value is for
+    CGSize headerSize;
+    
 } MTCardLayoutMetrics;
 
 typedef struct
 {
+    CGFloat presentingHeaderAlpha;
+    
     /// How much of the pulling is translated into movement on the top. An inheritance of 0 disables this feature (same as bouncesTop)
     CGFloat inheritance;
     
