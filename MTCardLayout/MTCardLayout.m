@@ -218,12 +218,13 @@ CGRect frameForCardAtIndex(NSIndexPath *indexPath, CGRect b, CGSize collectionVi
         
     if (b.origin.y + contentInset.top < 0 && e.inheritance > 0.0 && e.bouncesTop) {
         if (indexPath.section == 0 && indexPath.item == 0) {
-            f.origin.y = (b.origin.y + contentInset.top) * e.inheritance/2.0 + m.flexibleTop + m.listingInsets.top;
+            f.origin.y = (b.origin.y + contentInset.top) * e.inheritance/2.0 + m.flexibleTop + m.listingInsets.top + header.height;
         }
         else {
             f.origin.y -= (b.origin.y + contentInset.top) * indexPath.item * e.inheritance;
         }
     }
+
     return f;
 }
 

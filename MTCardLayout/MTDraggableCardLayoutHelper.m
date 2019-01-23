@@ -99,7 +99,7 @@ typedef NS_ENUM(NSInteger, MTDraggingAction) {
 }
 
 - (CGFloat)closingItemDragLimit {
-    return self.collectionView.frame.size.height/2;
+    return self.collectionView.frame.size.height/2.2;
 }
 
 - (CGRect)movingItemFrame
@@ -129,6 +129,17 @@ typedef NS_ENUM(NSInteger, MTDraggingAction) {
     
     cell.frame = self.movingItemFrame;
     cell.alpha = self.movingItemAlpha;
+}
+
+- (void)hideCell {
+    NSIndexPath *indexPath = self.movingItemAttributes.indexPath;
+    NSAssert(indexPath, @"movingItemAttributes cannot be nil");
+    
+    UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+    if (!cell) return; // Cell is not visible
+    
+    cell.frame = CGRectMake(0, self.collectionView.contentOffset.y + self.collectionView.frame.size.height, self.movingItemFrame.size.width, self.movingItemFrame.size.height);
+    cell.alpha = 0;
 }
 
 - (void)clearDraggingAction
@@ -571,9 +582,14 @@ typedef NS_ENUM(NSInteger, MTDraggingAction) {
                 [self finalizeDeletingItemWithSwipeDirection:direction];
             } else {
                 if (self.movingItemTranslation.y >= [self closingItemDragLimit]) {
-                    [collectionView deselectAndNotifyDelegate:indexPath];
+                    self.movingItemTranslation = CGPointZero;
+                    [UIView animateWithDuration:DEFAULT_ANIMATION_DURATION animations:^{
+                        [self hideCell];
+                    } completion:^(BOOL finished) {
+                        [collectionView setViewMode:MTCardLayoutViewModeDefault animated:YES completion:nil];
+                        [collectionView deselectAndNotifyDelegate:indexPath];
+                    }];
                     [self clearDraggingAction];
-                    [collectionView performBatchUpdates:nil completion:nil];
                 } else {
                     self.movingItemTranslation = CGPointZero;
                     [UIView animateWithDuration:DEFAULT_ANIMATION_DURATION animations:^{
