@@ -1,7 +1,6 @@
 #import "MTCardLayoutHelper.h"
 #import "UICollectionView+CardLayout.h"
 
-static int kObservingCollectionViewOffset;
 static NSString * const kContentOffsetKeyPath = @"contentOffset";
 
 @interface MTCardLayoutHelper() <UIGestureRecognizerDelegate>
@@ -24,46 +23,8 @@ static NSString * const kContentOffsetKeyPath = @"contentOffset";
                                                                             action:@selector(handleTapGesture:)];
         self.tapGestureRecognizer.delegate = self;
         [self.collectionView addGestureRecognizer:self.tapGestureRecognizer];
-        
-        [collectionView addObserver:self
-						 forKeyPath:kContentOffsetKeyPath
-							options:0
-							context:&kObservingCollectionViewOffset];
-        
     }
     return self;
-}
-
-- (void)unbindFromCollectionView:(UICollectionView *)collectionView
-{
-	[collectionView removeObserver:self forKeyPath:kContentOffsetKeyPath context:&kObservingCollectionViewOffset];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if (context == &kObservingCollectionViewOffset) {
-        UICollectionView *collectionView = self.collectionView;
-        if (collectionView && collectionView.dragging)
-        {
-            UIEdgeInsets edgeInsets = collectionView.contentInset;
-            BOOL bounces = collectionView.bounces;
-            
-            if (collectionView.contentOffset.y < - 100 - edgeInsets.top && collectionView.scrollEnabled)
-            {
-                return;
-                collectionView.contentInset = UIEdgeInsetsMake(-collectionView.contentOffset.y, edgeInsets.left, edgeInsets.bottom, edgeInsets.right);
-                collectionView.bounces = NO;
-                
-                [self.collectionView setViewMode:MTCardLayoutViewModePresenting animated:YES completion:^(BOOL finished) {
-                    collectionView.contentInset = edgeInsets;
-                    collectionView.bounces = bounces;
-                }];
-            }
-        }
-	}
-    else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
 }
 
 #pragma mark - Tap gesture

@@ -21,7 +21,6 @@ static const char MTCardLayoutHelperKey;
 	MTCardLayoutHelper *helper = objc_getAssociatedObject(self, &MTCardLayoutHelperKey);
 	if (helper)
 	{
-		[helper unbindFromCollectionView:self];
 		objc_setAssociatedObject(self, &MTCardLayoutHelperKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 	}
 }

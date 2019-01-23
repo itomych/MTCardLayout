@@ -6,6 +6,5 @@
 @property (nonatomic) MTCardLayoutViewMode viewMode;
 
 - (id)initWithCollectionView:(UICollectionView *)collectionView;
-- (void)unbindFromCollectionView:(UICollectionView *)collectionView;
 
 @end
