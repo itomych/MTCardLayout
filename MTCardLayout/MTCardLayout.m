@@ -248,10 +248,6 @@ CGRect frameForUnselectedCard(NSIndexPath *indexPath, NSIndexPath *indexPathSele
         f.size.height = 0;
     }
 
-    if (f.origin.y >= CGRectGetMaxY(b)) {
-        f.origin.y = CGRectGetMaxY(b) - 0.5;
-    }
-
     return f;
 }
 
