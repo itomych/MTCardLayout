@@ -244,10 +244,7 @@ CGRect frameForUnselectedCard(NSIndexPath *indexPath, NSIndexPath *indexPathSele
 
     CGRect f = UIEdgeInsetsInsetRect(b, m.presentingInsets);
     f.origin.y = b.origin.y + b.size.height + m.stackedVisibleHeight * itemOrder - bottomStackedTotalHeight;
-    if (indexPath.item < firstVisibleItem) {
-        f.size.height = 0;
-    }
-
+    
     return f;
 }
 
